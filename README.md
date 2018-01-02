@@ -62,7 +62,7 @@ This is a sample agent that can used metrics of a program. I used this for get m
     `git clone https://github.com/ShehanPerera/Java-Agent-Byte-Buddy-for-measure-execution-time-.git`
   
   2. Copy all files from 'Java-Agent-Byte-Buddy-for-measure-execution-time-/src/main/java/com/github/shehanperera/javaagent'
-  to 'performance-common/components/netty-http-echo-service/src/main/java/org/wso2/performance/common/netty/echo'
+  to 'performance-common/components/netty-http-echo-service/src/main/java/org/wso2/performance/common/netty/echo' and add resources/conf/metrics.yaml file to resources folder in netty-http-echo-service/src/main.
   
   3. Add dependecy to netty-server pom
   
