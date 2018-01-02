@@ -15,6 +15,7 @@
 package com.github.shehanperera.javaagent;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.wso2.carbon.config.ConfigurationException;
@@ -27,11 +28,13 @@ class Agent {
     public static void premain(String arguments, Instrumentation instrumentation) {
         System.out.println("Premain");
         new AgentBuilder.Default()
-                .type(ElementMatchers.nameContains("EchoHttpServerHandler"))
-                .transform((builder, type, classLoader, module) ->
-                        builder.method((ElementMatchers.nameContains("channelRead0")))/*This will inspect only 'channelRead0'
-                         which gives the output*/
-                                .intercept(MethodDelegation.to(Interceptor.class))
+                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+                .type((ElementMatchers.nameEndsWith("EchoHttpServerHandler")))
+                .transform(
+                        new AgentBuilder.Transformer.ForAdvice()
+                                .include(TimerAdvice.class.getClassLoader())
+                                .advice(ElementMatchers.nameContains("channelRead0"), TimerAdvice.class.getName())
+
                 ).installOn(instrumentation);
     }
 

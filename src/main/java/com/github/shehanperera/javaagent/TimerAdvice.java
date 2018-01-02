@@ -15,30 +15,28 @@
 package com.github.shehanperera.javaagent;
 
 import io.netty.handler.codec.http.FullHttpRequest;
+import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.bind.annotation.Argument;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.wso2.carbon.metrics.core.Timer;
 
-import java.util.concurrent.Callable;
 
+class TimerAdvice {
 
-class Interceptor {
-
-    @RuntimeType
-    public static Object intercept(@SuperCall Callable<?> callable, @Argument(1) FullHttpRequest msg /*This will get the arrument FullHttpRequest msg
-     of chanelRead0 method */
-    ) throws Exception {
+    @Advice.OnMethodEnter
+    static Timer.Context enter() {
         MetricServer metricServer = MetricServer.getInstance();
         metricServer.getRequestsMeter().mark();
         metricServer.getIncomeJobs().inc();
         Timer.Context context;
         context = metricServer.getResponsesTime().start();
-        metricServer.getRequestsSize().update(msg.content().readableBytes());
-        try {
-            return callable.call();
-        } finally {
-            context.stop();
-        }
+        return context;
     }
+
+    @Advice.OnMethodExit
+    static void exit(@Advice.Enter Timer.Context context, @Argument(1) FullHttpRequest msg) {
+        MetricServer metricServer = MetricServer.getInstance();
+        metricServer.getRequestsSize().update(msg.content().readableBytes());
+        context.stop();
+    }
+/* @Argument(1) FullHttpRequest msg will give the size of request goes to channelRead0 method */
 }
