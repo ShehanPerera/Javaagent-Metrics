@@ -1,4 +1,4 @@
-# Java-Agent-Byte-Buddy-for-measure-execution-time
+# Java-Agent-Byte-Buddy-Metrics
 This is a sample agent that can used metrics of a program. I used this for get metrics of netty-server.
 
 <b>How to use WSO2-Performance-Common</b>
@@ -11,7 +11,13 @@ This is a sample agent that can used metrics of a program. I used this for get m
 
   `mvn clean install`
  
- 3.Open netty-http-echo-service from intellij idea and run it.
+3.Run Netty-server
+
+  3.1 Go to performance-common/distribution/target and extract performance-common-distribution-0.1.0-SNAPSHOT.tar.gz
+
+  3.2 Then go to performance-common-distribution-0.1.0-SNAPSHOT/netty-service and run netty-server
+
+  `./netty-start.sh`
  
  4.Sending Request
  
@@ -57,41 +63,25 @@ This is a sample agent that can used metrics of a program. I used this for get m
     
 <b>Add Javaagent-Metrics for netty server</b>
 
-  1.Download Javaagent-Metrics from hithub 
-  
-    `git clone https://github.com/ShehanPerera/Java-Agent-Byte-Buddy-for-measure-execution-time-.git`
-  
-  2. Copy all files from 'Java-Agent-Byte-Buddy-for-measure-execution-time-/src/main/java/com/github/shehanperera/javaagent'
-  to 'performance-common/components/netty-http-echo-service/src/main/java/org/wso2/performance/common/netty/echo' and add resources/conf/metrics.yaml file to resources folder in netty-http-echo-service/src/main.
-  
-  3. Add dependecy to netty-server pom
-  
-    `<dependency>
-            <groupId>org.wso2.carbon.config</groupId>
-            <artifactId>org.wso2.carbon.config</artifactId>
-            <version>2.1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.7.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.metrics</groupId>
-            <artifactId>org.wso2.carbon.metrics.core</artifactId>
-            <version>2.3.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>2.12.0</version>
-        </dependency>`
+  1.    Download Javaagent-Metrics from hithub
 
-4. Add this code for EchoHttpServer
-    
-    ` static {
-        Agent.premain("", ByteBuddyAgent.install());
-    }`
+`git clone https://github.com/ShehanPerera/Javaagent-Metrics.git`
+
+2. Go to Javaagent-Metrics directory and install it
+
+`mvn clean install`
+
+3.Go to target folder and copy javaagent-metrics-1.01.0-SNAPSHOT.jar file and paste to performance-common/distribution/target/performance-common-distribution-0.1.0-SNAPSHOT folder.
+
+4.Change netty-start.sh file and add javaagent
+
+`....
+
+echo "Starting Netty"
+nohup java -Xms4g -Xmx4g -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$gc_log_file -javaagent:javaagent-metrics-1.01.0-SNAPSHOT.jar \
+    -jar $service_name-0.1.0-SNAPSHOT.jar --worker-threads 2000 --sleep-time $sleep_time > netty.out 2>&1 &
+
+.....`
  
  5. Run netty-server and goto `jconsole` and we can get metrics data from it 
   
