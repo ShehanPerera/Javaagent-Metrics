@@ -75,11 +75,11 @@ This is a sample agent that can used metrics of a program. I used this for get m
 
 4.Change netty-start.sh file and add javaagent
 
-`....
+  `....
 
 echo "Starting Netty"
-nohup java -Xms4g -Xmx4g -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$gc_log_file -javaagent:javaagent-metrics-1.01.0-SNAPSHOT.jar \
-    -jar $service_name-0.1.0-SNAPSHOT.jar --worker-threads 2000 --sleep-time $sleep_time > netty.out 2>&1 &
+nohup java -Xms4g -Xmx4g -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$gc_log_file -javaagent:javaagent-metrics-           1.01.0-SNAPSHOT.jar \
+   -jar $service_name-0.1.0-SNAPSHOT.jar --worker-threads 2000 --sleep-time $sleep_time > netty.out 2>&1 &
 
 .....`
  
